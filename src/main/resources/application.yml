@@ -1,0 +1,5 @@
+server:
+ port: 8082
+LicenseAPI:
+ base-url: http://localhost:8081
+ fetch-url: ${LicenseAPI.base-url}/license
