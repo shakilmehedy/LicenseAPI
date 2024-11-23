@@ -14,6 +14,7 @@ public class LicenseController {
     private final LicenseService service;
 
     public LicenseController(LicenseService service) {
+
         this.service = service;
     }
 
@@ -57,6 +58,21 @@ public class LicenseController {
         service.deleteLicense(id);
         return ResponseEntity.noContent().build();
     }
+    @GetMapping("/verify")
+    public ResponseEntity<String> verifyBinNumber(
+            @RequestParam String binNumber,
+            @RequestParam String licenseCode) {
+
+        boolean isValid = service.verifyBinNumberWithLicense(binNumber, licenseCode);
+
+        if (isValid) {
+            return ResponseEntity.ok("Bin number and l icense match.");
+        } else {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Bin number and license do not match or expired");
+        }
+    }
+
+
 
 }
 

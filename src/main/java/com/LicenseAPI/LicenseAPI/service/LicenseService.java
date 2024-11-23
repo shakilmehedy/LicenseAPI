@@ -4,6 +4,7 @@ import com.LicenseAPI.LicenseAPI.repository.LicenseRepository;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
@@ -15,6 +16,7 @@ public class LicenseService {
     private final LicenseRepository licenseepository;
 
     public LicenseService(LicenseRepository licenseepository) {
+
         this.licenseepository = licenseepository;
     }
     public List<License> getAllLicense() {
@@ -57,7 +59,37 @@ public License activatelicense(Integer id)
     // Save the updated license back to the database
     return licenseepository.save(license);
 }
-}
+    public boolean verifyBinNumberWithLicense(String binNumber, String licenseCode) {
+//        return licenseepository.findByBinNumber(binNumber)
+//                .map(binLicense -> binLicense.getLicenseCode().equals(licenseCode))
+//                .orElse(false); // Return false if binNumber is not found
+        Optional<License> optionalBinLicense = licenseepository.findByBinNumber(binNumber);
+
+        if (optionalBinLicense.isPresent()) {
+            License binLicense = optionalBinLicense.get();
+
+            // Check if the license matches
+            if (!binLicense.getLicenseCode().equals(licenseCode)) {
+                return false;
+            }
+
+            // Check if the expiration date is present and not expired
+            if (binLicense.getExpirationDate() != null) {
+                return binLicense.getExpirationDate().isAfter(LocalDate.now());
+            }
+
+            // If no expiration date, assume valid
+            return true;
+        }
+
+        // If binNumber not found
+        return false;
+    }  }
+
+
+
+
+
 
 
 
